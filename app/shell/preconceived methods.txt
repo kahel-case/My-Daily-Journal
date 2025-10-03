@@ -1,0 +1,10 @@
+self.btn_write.clicked.connect(self.btn_write_clicked)
+self.btn_view.clicked.connect(self.btn_view_clicked)
+self.btn_delete.clicked.connect(self.btn_delete_clicked)
+
+def btn_write_clicked(self):
+        self.pageStack.setCurrentIndex(0)
+def btn_view_clicked(self):
+        self.pageStack.setCurrentIndex(1)
+def btn_delete_clicked(self):
+        self.pageStack.setCurrentIndex(2)

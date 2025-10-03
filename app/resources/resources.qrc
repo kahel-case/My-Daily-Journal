@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="window">
+    <file>images/icon.png</file>
+    <file>images/paper_background.jpg</file>
+  </qresource>
+</RCC>
