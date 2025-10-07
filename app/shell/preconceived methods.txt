@@ -1,10 +1,108 @@
-self.btn_write.clicked.connect(self.btn_write_clicked)
-self.btn_view.clicked.connect(self.btn_view_clicked)
-self.btn_delete.clicked.connect(self.btn_delete_clicked)
+from PyQt6.QtCore import QDate, QTime
 
-def btn_write_clicked(self):
-        self.pageStack.setCurrentIndex(0)
-def btn_view_clicked(self):
-        self.pageStack.setCurrentIndex(1)
-def btn_delete_clicked(self):
-        self.pageStack.setCurrentIndex(2)
+with open("app/resources/style.qss", "r") as f:
+        style = f.read()
+        f.close()
+
+# ====================================
+#       METHODS AND INITIALIZATION
+# ====================================
+        self.dateEdit.setDate(QtCore.QDate.currentDate())
+        self.timeEdit.setTime(QtCore.QTime.currentTime())
+        
+        self.btn_write.clicked.connect(self.writePage)
+        self.btn_read.clicked.connect(self.readPage)
+        self.btn_write_clear.clicked.connect(self.clearEntry)
+        self.btn_local_date.clicked.connect(self.setLocalDate)
+        self.read_next_page.clicked.connect(self.read_goToNextPage)
+        self.read_previous_page.clicked.connect(self.read_goToPreviousPage)
+        self.btn_write_save.clicked.connect(self.saveEntry)
+        self.btn_delete.clicked.connect(self.deleteEntry)
+        
+    def writePage(self):
+        self.main_stack.setCurrentIndex(0)
+    def readPage(self):
+        self.main_stack.setCurrentIndex(1)
+    
+    def deleteEntry(self):
+        self.main_stack.setCurrentIndex(1)
+        if self.read_stackWidget.count() == 0:
+                self.show_empty_journal()
+                return
+        if self.show_delete_warning():
+                index_to_remove = self.read_stackWidget.currentIndex()
+                widget_to_remove = self.read_stackWidget.widget(index_to_remove)
+
+                self.read_stackWidget.removeWidget(widget_to_remove)
+                widget_to_remove.deleteLater()
+                self.show_success_dialog("Deletion successful!")
+        
+    def saveEntry(self):
+        text = self.plainTextEdit.toPlainText().strip()
+        if not text:
+                self.show_textfield_empty()
+        else:
+                self.add_entry()
+                self.clearEntry()
+                self.show_success_dialog("Entry added to the journal!")
+                
+        
+    def read_goToNextPage(self):
+        currentIndex = self.read_stackWidget.currentIndex()
+        maxIndex = self.read_stackWidget.count()
+        if currentIndex < maxIndex:
+                self.read_stackWidget.setCurrentIndex(currentIndex + 1)
+        
+    def read_goToPreviousPage(self):
+        currentIndex = self.read_stackWidget.currentIndex()
+        if currentIndex > 0:
+                self.read_stackWidget.setCurrentIndex(currentIndex - 1)
+        
+    def clearEntry(self):
+        self.plainTextEdit.setPlainText("")
+    def setLocalDate(self):
+        self.dateEdit.setDate(QtCore.QDate.currentDate())
+        self.timeEdit.setTime(QtCore.QTime.currentTime())
+        
+    def add_entry(self):
+        text = QtWidgets.QTextBrowser()
+        text.setPlainText(f"{self.dateEdit.date().toString()} | {self.timeEdit.time().toString()}\n\n {self.plainTextEdit.toPlainText()}")
+        text.setStyleSheet(style)
+        text.adjustSize()
+        index = self.read_stackWidget.addWidget(text)
+        self.read_stackWidget.setCurrentIndex(index)
+        
+    def show_delete_warning(self):
+        msg = QtWidgets.QMessageBox(parent=None)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        msg.setWindowTitle("Delete Confirmation")
+        msg.setText(f"The entry currently is about to be deleted.\nAre you sure you want to delete this entry?")
+        msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        msg.setDefaultButton(QtWidgets.QMessageBox.StandardButton.No)
+        result = msg.exec()
+        return result == QtWidgets.QMessageBox.StandardButton.Yes
+    def show_empty_journal(self):
+        msg = QtWidgets.QMessageBox(parent=None)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        msg.setWindowTitle("Empty")
+        msg.setText(f"The journal is currently empty!")
+        msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        msg.exec()
+    def show_success_dialog(self, text: str):
+        msg = QtWidgets.QMessageBox(parent=None)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
+        msg.setWindowTitle("Success")
+        msg.setText(text)
+        msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        msg.exec()
+    def show_textfield_empty(self):
+        msg = QtWidgets.QMessageBox(parent=None)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+        msg.setWindowTitle("ERROR")
+        msg.setText("The journal entry cannot be left empty!")
+        msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Ok)
+        msg.exec()
+
+# ====================================
+#       METHODS AND INITIALIZATION
+# ====================================

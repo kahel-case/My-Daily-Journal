@@ -1,0 +1,68 @@
+QPushButton {
+	background-color: qlineargradient(spread:pad, x1:0.511, y1:1, x2:0.516727, y2:0, stop:0 rgba(0, 0, 0, 179), stop:1 rgba(120, 120, 120, 62));
+	color: white;
+	border-radius: 16px;
+	font-family: "Kristen ITC";
+	font-size: 14pt;
+}
+QPushButton:hover {
+    background-color: qlineargradient(spread:pad, x1:0.511, y1:1, x2:0.516727, y2:0, stop:0 rgba(47, 47, 47, 255), stop:1 rgba(168, 168, 168, 255));
+	color: white;
+	border-radius: 16px;
+	font-family: "Kristen ITC";
+	font-size: 16pt;
+}
+QPushButton:pressed {
+	background-color: qlineargradient(spread:pad, x1:0.505, y1:0, x2:0.522, y2:1, stop:0 rgba(98, 98, 98, 255), stop:1 rgba(202, 202, 202, 255));
+	color: white;
+	border-radius: 16px;
+	font-family: "Kristen ITC";
+	font-size: 16pt;
+}
+
+QStackWidget {
+	background-color: transparent;
+}
+
+QPlainTextEdit {
+	background-color: transparent;
+	border: none;
+	color: black;
+	font-family: "Kristen ITC";
+	font-size: 22px;
+}
+QTextBrowser {
+	background-color: transparent;
+	border: none;
+	color: black;
+	font-family: "Kristen ITC";
+	font-size: 22px;
+}
+QScrollArea {
+	background-color: transparent;
+	border: none;
+}
+QScrollArea > QWidget > QWidget {
+	background-color: transparent;
+}
+QScrollBar {
+	background: transparent;
+}
+
+QDateEdit {
+	background-color: transparent;
+	border: none;
+	color: black;
+	font-family: "Kristen ITC";
+	font-size: 16px;
+}
+QTimeEdit {
+	background-color: transparent;
+	border: none;
+	color: black;
+	font-family: "Kristen ITC";
+	font-size: 16px;
+}
+QLabel {
+	font-family: "Kristen ITC";
+}
