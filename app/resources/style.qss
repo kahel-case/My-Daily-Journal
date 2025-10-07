@@ -66,3 +66,10 @@ QTimeEdit {
 QLabel {
 	font-family: "Kristen ITC";
 }
+
+#left_widget {
+	border-image: url(app/resources/images/paper_background_left.png);
+}
+#right_widget {
+	border-image: url(app/resources/images/paper_background_right.png);
+}

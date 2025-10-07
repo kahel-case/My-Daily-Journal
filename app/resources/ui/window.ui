@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>My Daily Journal</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../resources.qrc">
+    <normaloff>:/window/images/icon.png</normaloff>:/window/images/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
@@ -219,7 +223,7 @@ QLabel {
               </font>
              </property>
              <property name="text">
-              <string>Write your entry!   ૮ ˶ᵔ ᵕ ᵔ˶ ა </string>
+              <string>Write your entry!  ૮ ˶ᵔ ᵕ ᵔ˶ ა </string>
              </property>
             </widget>
            </item>
@@ -355,11 +359,12 @@ QLabel {
              <property name="font">
               <font>
                <family>Kristen ITC</family>
-               <pointsize>16</pointsize>
+               <pointsize>26</pointsize>
+               <underline>false</underline>
               </font>
              </property>
              <property name="text">
-              <string>Read your previous entries~   ദ്ദി ˉ͈̀꒳ˉ͈́ )✧</string>
+              <string>Read your entries~ ദ്ദി ˉ͈̀꒳ˉ͈́ )✧</string>
              </property>
             </widget>
            </item>
@@ -431,28 +436,6 @@ QLabel {
                </widget>
               </item>
              </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="page_delete">
-          <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,14">
-           <item>
-            <widget class="QLabel" name="label_delete_title">
-             <property name="font">
-              <font>
-               <family>Kristen ITC</family>
-               <pointsize>20</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Delete an entry   (｡ᵕ ◞ _◟)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="widget_4" native="true">
-             <layout class="QVBoxLayout" name="verticalLayout_7"/>
             </widget>
            </item>
           </layout>

@@ -16,6 +16,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(623, 700)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("app/resources/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setStyleSheet(style)
         self.centralwidget.setObjectName("centralwidget")
@@ -31,9 +34,7 @@ class Ui_MainWindow(object):
         self.left_widget.setSizePolicy(sizePolicy)
         self.left_widget.setMinimumSize(QtCore.QSize(128, 0))
         self.left_widget.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.left_widget.setStyleSheet("#left_widget {\n"
-"    border-image: url(app/resources/images/paper_background_left.png)\n"
-"}")
+        self.left_widget.setStyleSheet(style)
         self.left_widget.setObjectName("left_widget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.left_widget)
         self.verticalLayout.setSpacing(36)
@@ -54,9 +55,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout.addWidget(self.left_widget)
         self.right_widget = QtWidgets.QWidget(parent=self.centralwidget)
-        self.right_widget.setStyleSheet("#right_widget {\n"
-"    border-image: url(app/resources/images/paper_background_right.png)\n"
-"}")
+        self.right_widget.setStyleSheet(style)
         self.right_widget.setObjectName("right_widget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.right_widget)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -137,7 +136,8 @@ class Ui_MainWindow(object):
         self.label_read_title = QtWidgets.QLabel(parent=self.page_read)
         font = QtGui.QFont()
         font.setFamily("Kristen ITC")
-        font.setPointSize(16)
+        font.setPointSize(26)
+        font.setUnderline(False)
         self.label_read_title.setFont(font)
         self.label_read_title.setObjectName("label_read_title")
         self.verticalLayout_3.addWidget(self.label_read_title)
@@ -172,25 +172,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setStretch(1, 14)
         self.verticalLayout_3.setStretch(2, 1)
         self.main_stack.addWidget(self.page_read)
-        self.page_delete = QtWidgets.QWidget()
-        self.page_delete.setObjectName("page_delete")
-        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.page_delete)
-        self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.label_delete_title = QtWidgets.QLabel(parent=self.page_delete)
-        font = QtGui.QFont()
-        font.setFamily("Kristen ITC")
-        font.setPointSize(20)
-        self.label_delete_title.setFont(font)
-        self.label_delete_title.setObjectName("label_delete_title")
-        self.verticalLayout_6.addWidget(self.label_delete_title)
-        self.widget_4 = QtWidgets.QWidget(parent=self.page_delete)
-        self.widget_4.setObjectName("widget_4")
-        self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.widget_4)
-        self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.verticalLayout_6.addWidget(self.widget_4)
-        self.verticalLayout_6.setStretch(0, 1)
-        self.verticalLayout_6.setStretch(1, 14)
-        self.main_stack.addWidget(self.page_delete)
         self.verticalLayout_2.addWidget(self.main_stack)
         self.horizontalLayout.addWidget(self.right_widget)
         self.horizontalLayout.setStretch(0, 1)
@@ -201,12 +182,14 @@ class Ui_MainWindow(object):
         self.main_stack.setCurrentIndex(0)
         self.read_stackWidget.setCurrentIndex(-1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
+
 # ====================================
 #       METHODS AND INITIALIZATION
 # ====================================
         self.dateEdit.setDate(QtCore.QDate.currentDate())
+        self.dateEdit.setDisplayFormat("yyyy/MM/dd")
         self.timeEdit.setTime(QtCore.QTime.currentTime())
+        self.timeEdit.setDisplayFormat("hh:mm AP")
         
         self.btn_write.clicked.connect(self.writePage)
         self.btn_read.clicked.connect(self.readPage)
@@ -217,11 +200,14 @@ class Ui_MainWindow(object):
         self.btn_write_save.clicked.connect(self.saveEntry)
         self.btn_delete.clicked.connect(self.deleteEntry)
         
+# ===== SWITCHING BETWEEN CONTENT =====
     def writePage(self):
         self.main_stack.setCurrentIndex(0)
     def readPage(self):
         self.main_stack.setCurrentIndex(1)
+# ========================================
     
+# ===== ACTION BUTTONS =====
     def deleteEntry(self):
         self.main_stack.setCurrentIndex(1)
         if self.read_stackWidget.count() == 0:
@@ -244,7 +230,23 @@ class Ui_MainWindow(object):
                 self.clearEntry()
                 self.show_success_dialog("Entry added to the journal!")
                 
+    def clearEntry(self):
+        self.plainTextEdit.setPlainText("")
         
+    def setLocalDate(self):
+        self.dateEdit.setDate(QtCore.QDate.currentDate())
+        self.timeEdit.setTime(QtCore.QTime.currentTime())
+        
+    def add_entry(self):
+        text = QtWidgets.QTextBrowser()
+        text.setPlainText(f"{self.dateEdit.date().toString("yyyy-MM-dd")} | {self.timeEdit.time().toString("hh:mm AP")}\n\n {self.plainTextEdit.toPlainText()}")
+        text.setStyleSheet(style)
+        text.adjustSize()
+        index = self.read_stackWidget.addWidget(text)
+        self.read_stackWidget.setCurrentIndex(index)
+# ========================================    
+        
+# ===== READ NEXT AND PREVIOUS PAGES =====
     def read_goToNextPage(self):
         currentIndex = self.read_stackWidget.currentIndex()
         maxIndex = self.read_stackWidget.count()
@@ -255,26 +257,14 @@ class Ui_MainWindow(object):
         currentIndex = self.read_stackWidget.currentIndex()
         if currentIndex > 0:
                 self.read_stackWidget.setCurrentIndex(currentIndex - 1)
+# ======================================== 
         
-    def clearEntry(self):
-        self.plainTextEdit.setPlainText("")
-    def setLocalDate(self):
-        self.dateEdit.setDate(QtCore.QDate.currentDate())
-        self.timeEdit.setTime(QtCore.QTime.currentTime())
-        
-    def add_entry(self):
-        text = QtWidgets.QTextBrowser()
-        text.setPlainText(f"{self.dateEdit.date().toString()} | {self.timeEdit.time().toString()}\n\n {self.plainTextEdit.toPlainText()}")
-        text.setStyleSheet(style)
-        text.adjustSize()
-        index = self.read_stackWidget.addWidget(text)
-        self.read_stackWidget.setCurrentIndex(index)
-        
+# ===== DIALOG POPUPS =====
     def show_delete_warning(self):
         msg = QtWidgets.QMessageBox(parent=None)
         msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
         msg.setWindowTitle("Delete Confirmation")
-        msg.setText(f"The entry currently is about to be deleted.\nAre you sure you want to delete this entry?")
+        msg.setText(f"The entry currently shown is about to be deleted.\nAre you sure you want to delete this entry?")
         msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
         msg.setDefaultButton(QtWidgets.QMessageBox.StandardButton.No)
         result = msg.exec()
@@ -302,29 +292,27 @@ class Ui_MainWindow(object):
         msg.exec()
 
 # ====================================
-#       METHODS AND INITIALIZATION
+#                END
 # ====================================
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "My Daily Journal"))
         self.btn_write.setText(_translate("MainWindow", "Write"))
         self.btn_read.setText(_translate("MainWindow", "Read"))
-        self.label_write_title.setText(_translate("MainWindow", "Write your entry!   ૮ ˶ᵔ ᵕ ᵔ˶ ა "))
+        self.label_write_title.setText(_translate("MainWindow", "Write your entry!  ૮ ˶ᵔ ᵕ ᵔ˶ ა "))
         self.plainTextEdit.setPlaceholderText(_translate("MainWindow", "Click here and talk about your day!"))
         self.btn_write_clear.setText(_translate("MainWindow", "Clear"))
         self.btn_local_date.setText(_translate("MainWindow", "Set Date"))
         self.btn_write_save.setText(_translate("MainWindow", "Save"))
-        self.label_read_title.setText(_translate("MainWindow", "Read your previous entries~   ദ്ദി ˉ͈̀꒳ˉ͈́ )✧"))
+        self.label_read_title.setText(_translate("MainWindow", "Read your entries~ ദ്ദി ˉ͈̀꒳ˉ͈́ )✧"))
         self.read_previous_page.setText(_translate("MainWindow", "<<<"))
         self.read_previous_page.setShortcut(_translate("MainWindow", "Left, A"))
         self.btn_delete.setText(_translate("MainWindow", "Delete"))
         self.read_next_page.setText(_translate("MainWindow", ">>>"))
         self.read_next_page.setShortcut(_translate("MainWindow", "Right, D"))
-        self.label_delete_title.setText(_translate("MainWindow", "Delete an entry   (｡ᵕ ◞ _◟)"))
 
-
-if __name__ == "__main__":
+def openWindow():
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
@@ -332,3 +320,6 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    openWindow()
