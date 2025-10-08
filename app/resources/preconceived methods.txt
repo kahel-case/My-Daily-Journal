@@ -1,3 +1,10 @@
+from repository import EntryRepository
+
+dateList = []
+timeList = []
+contentList = []
+repository = EntryRepository()
+
 with open("app/resources/style.qss", "r") as f:
         style = f.read()
         f.close()
@@ -7,6 +14,9 @@ with open("app/resources/style.qss", "r") as f:
 # ====================================
         self.dateEdit.setDate(QtCore.QDate.currentDate())
         self.dateEdit.setDisplayFormat("yyyy/MM/dd")
+        
+        print(self.dateEdit.date().toString("yyyy-MM-dd").split("-"))
+        
         self.timeEdit.setTime(QtCore.QTime.currentTime())
         self.timeEdit.setDisplayFormat("hh:mm AP")
         
@@ -19,6 +29,8 @@ with open("app/resources/style.qss", "r") as f:
         self.btn_write_save.clicked.connect(self.saveEntry)
         self.btn_delete.clicked.connect(self.deleteEntry)
         
+        self.initializeEntries()
+        
 # ===== SWITCHING BETWEEN CONTENT =====
     def writePage(self):
         self.main_stack.setCurrentIndex(0)
@@ -27,27 +39,28 @@ with open("app/resources/style.qss", "r") as f:
 # ========================================
     
 # ===== ACTION BUTTONS =====
-    def deleteEntry(self):
-        self.main_stack.setCurrentIndex(1)
-        if self.read_stackWidget.count() == 0:
-                self.show_empty_journal()
-                return
-        if self.show_delete_warning():
-                index_to_remove = self.read_stackWidget.currentIndex()
-                widget_to_remove = self.read_stackWidget.widget(index_to_remove)
-
-                self.read_stackWidget.removeWidget(widget_to_remove)
-                widget_to_remove.deleteLater()
-                self.show_success_dialog("Deletion successful!")
-        
     def saveEntry(self):
         text = self.plainTextEdit.toPlainText().strip()
         if not text:
-                self.show_textfield_empty()
+            self.show_textfield_empty()
         else:
-                self.add_entry()
-                self.clearEntry()
-                self.show_success_dialog("Entry added to the journal!")
+            self.add_entry()
+            self.clearEntry()
+            self.show_success_dialog("Entry added to the journal!")
+                
+    def deleteEntry(self):
+        self.main_stack.setCurrentIndex(1)
+            
+        if self.read_stackWidget.count() == 0:
+            self.show_empty_journal()
+            return
+        if self.show_delete_warning():
+            
+            index = self.show_input_dialog()
+            
+            repository.deleteData(index)
+            self.initializeEntries()
+            self.show_success_dialog("Deletion successful!")
                 
     def clearEntry(self):
         self.plainTextEdit.setPlainText("")
@@ -57,12 +70,40 @@ with open("app/resources/style.qss", "r") as f:
         self.timeEdit.setTime(QtCore.QTime.currentTime())
         
     def add_entry(self):
-        text = QtWidgets.QTextBrowser()
-        text.setPlainText(f"{self.dateEdit.date().toString("yyyy-MM-dd")} | {self.timeEdit.time().toString("hh:mm AP")}\n\n {self.plainTextEdit.toPlainText()}")
-        text.setStyleSheet(style)
-        text.adjustSize()
-        index = self.read_stackWidget.addWidget(text)
-        self.read_stackWidget.setCurrentIndex(index)
+        date = self.dateEdit.date().toString("yyyy-MM-dd")
+        time = self.timeEdit.time().toString("hh:mm AP")
+        content = self.plainTextEdit.toPlainText()
+        
+        dateList.append(date)
+        timeList.append(time)
+        contentList.append(content)
+        
+        repository.insertData(date, time, content)
+        
+        #text = QtWidgets.QTextBrowser()
+        #text.setPlainText(f"{date} | {time}\n\n {content}")
+        #text.setStyleSheet(style)
+        #text.adjustSize()
+        
+        #index = self.read_stackWidget.addWidget(text)
+        #self.read_stackWidget.setCurrentIndex(index)
+        self.initializeEntries()
+        
+    def initializeEntries(self):
+        entries = repository.readData()
+        while self.read_stackWidget.count() > 0:
+            widget = self.read_stackWidget.widget(0)
+            self.read_stackWidget.removeWidget(widget)
+            widget.deleteLater()
+            
+        for i in entries:
+            text = QtWidgets.QTextBrowser()
+            text.setPlainText(f"ENTRY #{i[0]} | {i[1]} | {i[2]}\n\n {i[3]}")
+            text.setStyleSheet(style)
+            text.adjustSize()
+            
+            index = self.read_stackWidget.addWidget(text)
+            self.read_stackWidget.setCurrentIndex(index)
 # ========================================    
         
 # ===== READ NEXT AND PREVIOUS PAGES =====
@@ -70,20 +111,23 @@ with open("app/resources/style.qss", "r") as f:
         currentIndex = self.read_stackWidget.currentIndex()
         maxIndex = self.read_stackWidget.count()
         if currentIndex < maxIndex:
-                self.read_stackWidget.setCurrentIndex(currentIndex + 1)
+            self.read_stackWidget.setCurrentIndex(currentIndex + 1)
         
     def read_goToPreviousPage(self):
         currentIndex = self.read_stackWidget.currentIndex()
         if currentIndex > 0:
-                self.read_stackWidget.setCurrentIndex(currentIndex - 1)
+            self.read_stackWidget.setCurrentIndex(currentIndex - 1)
 # ======================================== 
         
 # ===== DIALOG POPUPS =====
+    def show_input_dialog(self) -> int:
+        num, ok = QtWidgets.QInputDialog.getInt(None, "Enter a Number", "Please enter an integer:")
+        return num
     def show_delete_warning(self):
         msg = QtWidgets.QMessageBox(parent=None)
         msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
         msg.setWindowTitle("Delete Confirmation")
-        msg.setText(f"The entry currently shown is about to be deleted.\nAre you sure you want to delete this entry?")
+        msg.setText(f"Are you sure you want to delete an entry?")
         msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
         msg.setDefaultButton(QtWidgets.QMessageBox.StandardButton.No)
         result = msg.exec()

@@ -1,4 +1,4 @@
-from shell.window import openWindow
+from window import openWindow
 
 def main():
     openWindow()
