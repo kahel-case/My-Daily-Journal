@@ -21,7 +21,7 @@ with open("app/resources/style.qss", "r") as f:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(623, 700)
+        MainWindow.resize(643, 700)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("app/resources/images/icon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
@@ -91,6 +91,14 @@ class Ui_MainWindow(object):
         self.widget_5.setObjectName("widget_5")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.widget_5)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.label = QtWidgets.QLabel(parent=self.widget_5)
+        self.label.setObjectName("label")
+        self.horizontalLayout_4.addWidget(self.label)
+        self.spinBox = QtWidgets.QSpinBox(parent=self.widget_5)
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(999999999)
+        self.spinBox.setObjectName("spinBox")
+        self.horizontalLayout_4.addWidget(self.spinBox)
         self.dateEdit = QtWidgets.QDateEdit(parent=self.widget_5)
         self.dateEdit.setCalendarPopup(True)
         self.dateEdit.setObjectName("dateEdit")
@@ -211,13 +219,6 @@ class Ui_MainWindow(object):
         
         self.initializeEntries()
         
-# ===== SWITCHING BETWEEN CONTENT =====
-    def writePage(self):
-        self.main_stack.setCurrentIndex(0)
-    def readPage(self):
-        self.main_stack.setCurrentIndex(1)
-# ========================================
-    
 # ===== ACTION BUTTONS =====
     def saveEntry(self):
         text = self.plainTextEdit.toPlainText().strip()
@@ -226,6 +227,24 @@ class Ui_MainWindow(object):
         else:
             self.add_entry()
             self.clearEntry()
+            
+    def add_entry(self):
+        entryNumber = int(self.spinBox.text())
+        date = self.dateEdit.date().toString("yyyy-MM-dd")
+        time = self.timeEdit.time().toString("hh:mm AP")
+        content = self.plainTextEdit.toPlainText()
+        dateList.append(date)
+        timeList.append(time)
+        contentList.append(content)
+            
+        if repository.findMatch(entryNumber):   # APPENDS ENTRY TO ALREADY EXISTING DATA
+            if self.show_append_warning():
+                repository.appendData(entryNumber, content)
+                self.initializeEntries()
+                self.show_success_dialog("Entry appended to the journal!")
+        else:                                   # ADDS A NEW
+            repository.insertData(entryNumber, date, time, content)
+            self.initializeEntries()
             self.show_success_dialog("Entry added to the journal!")
                 
     def deleteEntry(self):
@@ -249,26 +268,6 @@ class Ui_MainWindow(object):
         self.dateEdit.setDate(QtCore.QDate.currentDate())
         self.timeEdit.setTime(QtCore.QTime.currentTime())
         
-    def add_entry(self):
-        date = self.dateEdit.date().toString("yyyy-MM-dd")
-        time = self.timeEdit.time().toString("hh:mm AP")
-        content = self.plainTextEdit.toPlainText()
-        
-        dateList.append(date)
-        timeList.append(time)
-        contentList.append(content)
-        
-        repository.insertData(date, time, content)
-        
-        #text = QtWidgets.QTextBrowser()
-        #text.setPlainText(f"{date} | {time}\n\n {content}")
-        #text.setStyleSheet(style)
-        #text.adjustSize()
-        
-        #index = self.read_stackWidget.addWidget(text)
-        #self.read_stackWidget.setCurrentIndex(index)
-        self.initializeEntries()
-        
     def initializeEntries(self):
         entries = repository.readData()
         while self.read_stackWidget.count() > 0:
@@ -285,6 +284,13 @@ class Ui_MainWindow(object):
             index = self.read_stackWidget.addWidget(text)
             self.read_stackWidget.setCurrentIndex(index)
 # ========================================    
+        
+# ===== SWITCHING BETWEEN CONTENT =====
+    def writePage(self):
+        self.main_stack.setCurrentIndex(0)
+    def readPage(self):
+        self.main_stack.setCurrentIndex(1)
+# ========================================
         
 # ===== READ NEXT AND PREVIOUS PAGES =====
     def read_goToNextPage(self):
@@ -308,6 +314,15 @@ class Ui_MainWindow(object):
         msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
         msg.setWindowTitle("Delete Confirmation")
         msg.setText(f"Are you sure you want to delete an entry?")
+        msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        msg.setDefaultButton(QtWidgets.QMessageBox.StandardButton.No)
+        result = msg.exec()
+        return result == QtWidgets.QMessageBox.StandardButton.Yes
+    def show_append_warning(self):
+        msg = QtWidgets.QMessageBox(parent=None)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        msg.setWindowTitle("Append Confirmation")
+        msg.setText(f"The entry number already exists.\nWould you like to append the entry to it instead?")
         msg.setStandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
         msg.setDefaultButton(QtWidgets.QMessageBox.StandardButton.No)
         result = msg.exec()
@@ -344,6 +359,7 @@ class Ui_MainWindow(object):
         self.btn_write.setText(_translate("MainWindow", "Write"))
         self.btn_read.setText(_translate("MainWindow", "Read"))
         self.label_write_title.setText(_translate("MainWindow", "Write your entry!  ૮ ˶ᵔ ᵕ ᵔ˶ ა "))
+        self.label.setText(_translate("MainWindow", "Entry #"))
         self.plainTextEdit.setPlaceholderText(_translate("MainWindow", "Click here and talk about your day!"))
         self.btn_write_clear.setText(_translate("MainWindow", "Clear"))
         self.btn_local_date.setText(_translate("MainWindow", "Set Date"))
@@ -354,6 +370,7 @@ class Ui_MainWindow(object):
         self.btn_delete.setText(_translate("MainWindow", "Delete"))
         self.read_next_page.setText(_translate("MainWindow", ">>>"))
         self.read_next_page.setShortcut(_translate("MainWindow", "Right, D"))
+
 
 def openWindow():
     import sys

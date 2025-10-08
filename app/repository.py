@@ -16,8 +16,12 @@ class EntryRepository:
         self.conn.execute(stmt)
         self.conn.commit()
     
-    def insertData(self, date: str, time: str, entry: str):
-        self.cursor.execute("INSERT INTO journal(date, time, entry) VALUES(?, ?, ?)", (date, time, entry))
+    def insertData(self, id: int, date: str, time: str, entry: str):
+        self.cursor.execute("INSERT INTO journal(id, date, time, entry) VALUES(?, ?, ?, ?)", (id, date, time, entry))
+        self.conn.commit()
+        
+    def appendData(self, id: int, entry: str):
+        self.cursor.execute("UPDATE journal SET entry = entry || ? WHERE id = ?", (entry, id))
         self.conn.commit()
         
     def deleteData(self, id: int):
@@ -29,6 +33,14 @@ class EntryRepository:
         rows = self.cursor.fetchall()
         return rows
     
+    def findMatch(self, id: int) -> bool:
+        self.cursor.execute("SELECT * FROM journal WHERE id = ?", (id,))
+        match = self.cursor.fetchall()
+        if len(match) > 0:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     s = EntryRepository()
+    

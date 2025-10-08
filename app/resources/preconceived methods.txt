@@ -31,13 +31,6 @@ with open("app/resources/style.qss", "r") as f:
         
         self.initializeEntries()
         
-# ===== SWITCHING BETWEEN CONTENT =====
-    def writePage(self):
-        self.main_stack.setCurrentIndex(0)
-    def readPage(self):
-        self.main_stack.setCurrentIndex(1)
-# ========================================
-    
 # ===== ACTION BUTTONS =====
     def saveEntry(self):
         text = self.plainTextEdit.toPlainText().strip()
@@ -79,14 +72,6 @@ with open("app/resources/style.qss", "r") as f:
         contentList.append(content)
         
         repository.insertData(date, time, content)
-        
-        #text = QtWidgets.QTextBrowser()
-        #text.setPlainText(f"{date} | {time}\n\n {content}")
-        #text.setStyleSheet(style)
-        #text.adjustSize()
-        
-        #index = self.read_stackWidget.addWidget(text)
-        #self.read_stackWidget.setCurrentIndex(index)
         self.initializeEntries()
         
     def initializeEntries(self):
@@ -105,6 +90,13 @@ with open("app/resources/style.qss", "r") as f:
             index = self.read_stackWidget.addWidget(text)
             self.read_stackWidget.setCurrentIndex(index)
 # ========================================    
+        
+# ===== SWITCHING BETWEEN CONTENT =====
+    def writePage(self):
+        self.main_stack.setCurrentIndex(0)
+    def readPage(self):
+        self.main_stack.setCurrentIndex(1)
+# ========================================
         
 # ===== READ NEXT AND PREVIOUS PAGES =====
     def read_goToNextPage(self):

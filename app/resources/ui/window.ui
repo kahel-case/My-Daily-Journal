@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>623</width>
+    <width>643</width>
     <height>700</height>
    </rect>
   </property>
@@ -238,6 +238,23 @@ QLabel {
               <item>
                <widget class="QWidget" name="widget_5" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>Entry #</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="spinBox">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>999999999</number>
+                   </property>
+                  </widget>
+                 </item>
                  <item>
                   <widget class="QDateEdit" name="dateEdit">
                    <property name="calendarPopup">
