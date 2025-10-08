@@ -203,8 +203,6 @@ class Ui_MainWindow(object):
         self.dateEdit.setDate(QtCore.QDate.currentDate())
         self.dateEdit.setDisplayFormat("yyyy/MM/dd")
         
-        print(self.dateEdit.date().toString("yyyy-MM-dd").split("-"))
-        
         self.timeEdit.setTime(QtCore.QTime.currentTime())
         self.timeEdit.setDisplayFormat("hh:mm AP")
         
