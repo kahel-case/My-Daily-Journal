@@ -22,13 +22,13 @@ main.py acts as the single entry point of the whole program, while repository.py
 * repository.py deals with the database and data.
 
 ## SCREENSHOTS
-![image](screenshots\write.png)
-![image](screenshots\entry-added.png)
-![image](screenshots\read-with-new-entry.png)
-![image](screenshots\write-appending.png)
-![image](screenshots\read-with-appended-entry.png)
-![image](screenshots\read-deleting.png)
-![image](screenshots\read-delete-input.png)
+![image info](screenshots/write.png)
+![image info](screenshots/entry-added.png)
+![image info](screenshots/read-with-new-entry.png)
+![image info](screenshots/write-appending.png)
+![image info](screenshots/read-with-appended-entry.png)
+![image info](screenshots/read-deleting.png)
+![image info](screenshots/read-delete-input.png)
 
 ## HOW TO RUN THE PROGRAM
 First, install all the requirements.
